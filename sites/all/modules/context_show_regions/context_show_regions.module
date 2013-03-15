@@ -1,0 +1,63 @@
+<?php
+function context_show_regions_context_plugins(){
+  $context_layouts_enabled = module_exists('context_layouts');
+  $plugins['context_show_regions_reaction_block'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'context_show_regions') .'/plugins',
+      'file' => $context_layouts_enabled ? 'context_show_regions_reaction_block-context-layouts.inc' : 'context_show_regions_reaction_block.inc',
+      'class' => 'context_show_regions_reaction_block',
+      'parent' => $context_layouts_enabled ? 'context_layouts_reaction_block' : 'context_reaction_block',
+    ),
+  );
+  return $plugins;
+}
+/**                     **/
+function context_show_regions_context_registry_alter(&$registry){
+  if(isset($registry['reactions']['block']))
+    $registry['reactions']['block']['plugin'] = 'context_show_regions_reaction_block';
+}
+/**                     **/
+function context_show_regions_theme_registry_alter(&$registry){
+  if(isset($registry['context_block_editable_region']))
+   $registry['context_block_editable_region']['preprocess functions'][] = 'template_preprocess_context_show_regions_block_editable_region';
+}
+/**
+ * Preprocessor over ride for template_preprocess_context_block_editable_region.
+ */
+function template_preprocess_context_show_regions_block_editable_region(&$vars) {
+  if (!empty($vars['editable'])) {
+    // Show when empty?
+    $vars['show_always'] = $_SESSION['show_regions'];
+    // Provide the user-friendly name of the region
+    global $theme_key;
+    $regions = system_region_list($theme_key);
+    $vars['region_description'] = isset($regions[$vars['region']]) ? $regions[$vars['region']] : $vars['region'];
+  }
+}
+function context_show_regions_init(){
+  $_SESSION['show_regions'] = isset($_SESSION['show_regions'])? $_SESSION['show_regions'] : false;
+  if(isset($_REQUEST['show_regions']))
+    $_SESSION['show_regions'] = ($_REQUEST['show_regions'])? TRUE : FALSE;  
+}
+function context_show_regions_block($op = 'list', $delta = 0, $edit = array()){
+  if($op == 'list'){
+    return array(
+      0 => array(
+        "info"  => "Show Regions Context Editing",
+        "cache" => BLOCK_NO_CACHE,
+		"admin"	=> TRUE,
+      ), 
+    );
+  }elseif($op == 'view'){
+    switch($delta){
+      case 0:
+        drupal_add_css(drupal_get_path('module', 'context_show_regions') . '/context_show_regions.css' );
+        $data = array("query" => array("show_regions" => ($_SESSION['show_regions']? "0": "1")));
+        $link_text = ($_SESSION['show_regions'])? 'Off': 'On';
+        return array(
+          "subject" => "Show All Regions",
+          "content" => "<ul><li>" . l($link_text, $_GET['q'], $data) . "</li></ul>",
+        );  
+    }
+  }
+}

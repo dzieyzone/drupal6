@@ -1,0 +1,15 @@
+dependencies[] = 'context_ui'
+dependencies[] = 'admin'
+description = "Alters the reaction plugin for blocks and makes show all regions variable on a per user basis"
+name = "Context Show All Regions"
+package = "Context"
+project = "context_show_regions"
+version = "6.x-1.2"
+core = "6.x"
+
+; Information added by drupal.org packaging script on 2011-08-04
+version = "6.x-1.3"
+core = "6.x"
+project = "context_show_regions"
+datestamp = "1312485115"
+
