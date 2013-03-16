@@ -182,23 +182,29 @@ DirectoryIndex index.php
 </IfModule>
 
 <filesmatch "\.(ico|flv|jpg|jpeg|png|gif|swf)$">
-Header set Cache-Control "max-age=2678400, public"
+  RequestHeader unset Cookie
+  Header unset Set-Cookie
+  Header set Cache-Control "max-age=2678400, public"
 </filesmatch>
 # Cache HTML files for a 1 hour
 <filesmatch "\.(html|htm)$">
-Header set Cache-Control "max-age=3600, private, must-revalidate"
+  Header set Cache-Control "max-age=3600, private, must-revalidate"
 </filesmatch>
 # Cache PDFs for a day
 <filesmatch "\.(pdf)$">
-Header set Cache-Control "max-age=86400, public"
+  Header set Cache-Control "max-age=86400, public"
 </filesmatch>
 # Cache CSS for 31 days
 <filesmatch "\.(css|css.gz)$">
-Header set Cache-Control "max-age=2678400, private"
+  RequestHeader unset Cookie
+  Header unset Set-Cookie
+  Header set Cache-Control "max-age=2678400, private"
 </filesmatch>
 # Cache Javascripts for 31 days
 <filesmatch "\.(js|js.gz)$">
-Header set Cache-Control "max-age=2678400, private"
+  Header set Cache-Control "max-age=2678400, private"
+  RequestHeader unset Cookie
+  Header unset Set-Cookie
 </filesmatch>
 
 Header append Vary Accept-Encoding
